@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 zLimits = new Vector2(-15f, 15f);
 
     private int speedParameterId;
-    private bool hasSpeedParameter;
     private bool actionLocked;
     private CharacterController body;
     private float verticalSpeed;
@@ -25,7 +24,7 @@ public class PlayerController : MonoBehaviour
     public void SetActionLocked(bool locked)
     {
         actionLocked = locked;
-        if (locked && hasSpeedParameter) animator.SetFloat(speedParameterId, 0f);
+        if (locked) animator.SetFloat(speedParameterId, 0f);
     }
 
     public bool MoveToKickPosition(Vector3 destination, float deltaTime)
@@ -38,7 +37,7 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(transform.rotation,
                 Quaternion.LookRotation(direction), turnSpeed * deltaTime);
         bool arrived = (destination - transform.position).sqrMagnitude <= 0.0004f;
-        if (hasSpeedParameter) animator.SetFloat(speedParameterId, arrived ? 0f : runBlendValue, 0.12f, deltaTime);
+        animator.SetFloat(speedParameterId, arrived ? 0f : runBlendValue, 0.12f, deltaTime);
         return arrived;
     }
 
@@ -49,23 +48,7 @@ public class PlayerController : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
 
         speedParameterId = Animator.StringToHash(speedParameter);
-        if (animator != null)
-        {
-            animator.applyRootMotion = false;
-            foreach (AnimatorControllerParameter parameter in animator.parameters)
-            {
-                if (parameter.nameHash == speedParameterId &&
-                    parameter.type == AnimatorControllerParameterType.Float)
-                {
-                    hasSpeedParameter = true;
-                    break;
-                }
-            }
-        }
-
-        if (!hasSpeedParameter)
-            Debug.LogWarning("PlayerController needs an Animator with a Float parameter named '" + speedParameter + "'.", this);
-
+        animator.applyRootMotion = false;
         transform.position = ClampToField(transform.position);
     }
 
@@ -92,8 +75,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Keep Run while input is held, including at the edge of the field.
-        if (hasSpeedParameter)
-            animator.SetFloat(speedParameterId, direction.magnitude * runBlendValue, 0.12f, Time.deltaTime);
+        animator.SetFloat(speedParameterId, direction.magnitude * runBlendValue, 0.12f, Time.deltaTime);
     }
 
     private Vector3 ClampToField(Vector3 position)

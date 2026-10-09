@@ -11,7 +11,6 @@ public class GoalTarget : MonoBehaviour
 
     public void Celebrate()
     {
-        if (confettiPrefab == null) return;
         GameObject effect = Instantiate(confettiPrefab, AimPosition + Vector3.up * 0.8f, Quaternion.identity);
         effect.name = "Goal Confetti Stars";
         effect.transform.localScale = Vector3.one * effectScale;

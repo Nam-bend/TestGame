@@ -17,7 +17,7 @@ public class BallCameraTarget : MonoBehaviour
 
     private void Start()
     {
-        if (followCamera == null && Camera.main != null)
+        if (followCamera == null)
             followCamera = Camera.main.GetComponent<CameraFollow>();
     }
 
@@ -27,7 +27,7 @@ public class BallCameraTarget : MonoBehaviour
         Vector3 displacement = transform.position - previousPosition;
         displacement.y = 0f;
         bool moving = displacement.magnitude / Time.deltaTime >= shotSpeedThreshold;
-        if (moving && !wasMoving && followCamera != null && followCamera.State == CameraFollow.FollowState.Player)
+        if (moving && !wasMoving && followCamera.State == CameraFollow.FollowState.Player)
             followCamera.FollowBall(transform);
         wasMoving = moving;
         previousPosition = transform.position;

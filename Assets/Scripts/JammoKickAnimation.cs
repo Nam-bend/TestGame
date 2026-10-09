@@ -21,15 +21,11 @@ public class JammoKickAnimation : MonoBehaviour
 
     public bool PlayKick(Vector3 direction)
     {
-        if (animator == null) animator = GetComponent<Animator>();
         if (IsPlaying || !animator.HasState(0, KickState)) return false;
         direction.y = 0f;
-        if (movement != null)
-        {
-            movement.SetActionLocked(true);
-            if (direction.sqrMagnitude > 0.0001f)
-                movement.transform.rotation = Quaternion.LookRotation(direction);
-        }
+        movement.SetActionLocked(true);
+        if (direction.sqrMagnitude > 0.0001f)
+            movement.transform.rotation = Quaternion.LookRotation(direction);
         IsPlaying = true;
         ContactReached = false;
         elapsed = 0f;
@@ -46,15 +42,14 @@ public class JammoKickAnimation : MonoBehaviour
     public void OnKickComplete()
     {
         IsPlaying = false;
-        if (movement != null) movement.SetActionLocked(false);
+        movement.SetActionLocked(false);
     }
 
     public void Cancel()
     {
         ContactReached = false;
         OnKickComplete();
-        if (animator != null && animator.isActiveAndEnabled)
-            animator.CrossFadeInFixedTime("Base Layer.NormalStatus", 0.1f);
+        animator.CrossFadeInFixedTime("Base Layer.NormalStatus", 0.1f);
     }
 
     private void Update()

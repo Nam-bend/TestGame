@@ -6,6 +6,6 @@ public class AutoKickSystem : MonoBehaviour
 
     public void KickFarthest()
     {
-        if (kickSystem != null) kickSystem.TryAutoKick();
+        kickSystem.TryAutoKick();
     }
 }

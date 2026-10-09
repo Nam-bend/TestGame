@@ -83,17 +83,15 @@ public class CameraFollow : MonoBehaviour
 
     public void SnapToPlayer()
     {
-        if (view == null) view = GetComponent<Camera>();
         ReturnToPlayer();
         ConfigureView();
-        focus = ClampFocus(playerTarget != null ? playerTarget.position : Vector3.zero);
+        focus = ClampFocus(playerTarget.position);
         PlaceCamera();
     }
 
     private void Tick(float deltaTime)
     {
         if (deltaTime <= 0f) return;
-        if (view == null) view = GetComponent<Camera>();
         stateTime += deltaTime;
         if (State == FollowState.GoalPause)
         {

@@ -24,10 +24,10 @@ public class KickSystem : MonoBehaviour
     public Transform ActiveBall { get; private set; }
     public int GoalsScored { get; private set; }
     public float KickRange => kickRange;
-    public bool IsBusy => shotInProgress || (kickAnimation != null && kickAnimation.IsPlaying)
-        || (followCamera != null && followCamera.State != CameraFollow.FollowState.Player);
+    public bool IsBusy => shotInProgress || kickAnimation.IsPlaying
+        || followCamera.State != CameraFollow.FollowState.Player;
     public bool IsPreparingShot => shotInProgress && phase != ShotPhase.Flight;
-    public bool HasGoals => FindNearestGoal(player != null ? player.position : Vector3.zero) != null;
+    public bool HasGoals => FindNearestGoal(player.position) != null;
 
     private void Update()
     {
@@ -36,7 +36,6 @@ public class KickSystem : MonoBehaviour
 
     public Transform FindNearbyBall()
     {
-        if (player == null) return null;
         Transform result = null;
         float bestDistance = kickRange * kickRange;
         foreach (Transform ball in balls)
@@ -54,7 +53,6 @@ public class KickSystem : MonoBehaviour
 
     public Transform FindFarthestBall()
     {
-        if (player == null) return null;
         Transform result = null;
         float bestDistance = -1f;
         foreach (Transform ball in balls)
@@ -111,17 +109,13 @@ public class KickSystem : MonoBehaviour
         activeGoal = goal;
         shotInProgress = true;
         approachElapsed = 0f;
-        if (kickAnimation != null && playerMovement != null)
+        playerMovement.SetActionLocked(true);
+        phase = approach ? ShotPhase.Approach : ShotPhase.Windup;
+        if (!approach && !StartWindup())
         {
-            playerMovement.SetActionLocked(true);
-            phase = approach ? ShotPhase.Approach : ShotPhase.Windup;
-            if (!approach && !StartWindup())
-            {
-                CancelShot();
-                return false;
-            }
+            CancelShot();
+            return false;
         }
-        else StartFlight();
         return true;
     }
 
@@ -134,7 +128,7 @@ public class KickSystem : MonoBehaviour
     private void StartFlight()
     {
         phase = ShotPhase.Flight;
-        if (followCamera != null) followCamera.FollowBall(ActiveBall, false);
+        followCamera.FollowBall(ActiveBall, false);
     }
 
     private void CancelShot()
@@ -142,9 +136,9 @@ public class KickSystem : MonoBehaviour
         shotInProgress = false;
         ActiveBall = null;
         activeGoal = null;
-        if (kickAnimation != null) kickAnimation.Cancel();
-        if (playerMovement != null) playerMovement.SetActionLocked(false);
-        if (followCamera != null) followCamera.ReturnToPlayer();
+        kickAnimation.Cancel();
+        playerMovement.SetActionLocked(false);
+        followCamera.ReturnToPlayer();
     }
 
     private void Tick(float deltaTime)
@@ -158,7 +152,7 @@ public class KickSystem : MonoBehaviour
         if (phase == ShotPhase.Approach)
         {
             approachElapsed += deltaTime;
-            if (playerMovement == null || !playerMovement.isActiveAndEnabled || approachElapsed >= approachTimeout)
+            if (!playerMovement.isActiveAndEnabled || approachElapsed >= approachTimeout)
             {
                 CancelShot();
                 return;
@@ -184,7 +178,7 @@ public class KickSystem : MonoBehaviour
         scoredBalls.Add(ActiveBall);
         GoalsScored++;
         activeGoal.Celebrate();
-        if (followCamera != null) followCamera.NotifyGoal(ActiveBall);
+        followCamera.NotifyGoal(ActiveBall);
         ActiveBall = null;
         activeGoal = null;
         shotInProgress = false;
