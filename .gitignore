@@ -7,3 +7,5 @@ obj
 Logs
 .vs
 Library
+Builds/
+.validation/

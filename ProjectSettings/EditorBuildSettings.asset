@@ -4,5 +4,9 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Location soccer field.unity
+    guid: b02f46ebb4f474b40bc3e09f976972fb
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
